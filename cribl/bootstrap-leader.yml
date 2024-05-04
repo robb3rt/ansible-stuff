@@ -1,0 +1,29 @@
+---
+- name: Install Cribl Stream leader
+  hosts: myhosts
+  roles:
+    - leader_requirements
+    - install_requirements
+    - installation
+    - git_configuration
+    - recover_remote_repo
+    - service_management
+  vars:
+    install_dir: /opt/cribl
+    owner: cribl
+    group: cribl
+    leader:
+      host: 0.0.0.0
+      port: 4200
+      authToken: criblmaster
+      tls:
+        disabled: true
+    ssh_key:
+      src_path: ~/.ssh/id_ed25519
+      dest_path: /home/{{ owner }}/.ssh/git_ssh.key
+    git:
+      author:
+        email: nrgrobbert@msn.com
+        name: Robbert Hink
+      domain: github.com
+      remote_repo_url: git@github.com:robb3rt/cribl.git

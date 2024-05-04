@@ -1,0 +1,12 @@
+- name: Ensure "{{ owner }}" user exists
+  user:
+    name: "{{ owner }}"
+    comment: Cribl Stream user
+  
+- name: Ensure install_dir exists
+  file:
+    path: "{{ install_dir }}"
+    state: directory
+    owner: "{{ owner }}"
+    group: "{{ group }}"
+    mode: 0700

@@ -1,0 +1,23 @@
+- name: Recover configuration from remote Git repository
+  shell: |
+    su cribl -c "cd {{ install_dir }} &&
+      git init &&
+      git config --global --add safe.directory {{ install_dir }} &&
+      git config --global core.sshCommand 'ssh -i {{ ssh_key.dest_path }}' &&
+      git config --global user.email '{{ git.author.email }}' &&
+      git config --global user.name '{{ git.author.name }}' &&
+      git remote add origin {{ git.remote_repo_url }} &&
+      ssh-keyscan -t rsa {{ git.domain }} >> {{ ssh_key.dest_path | dirname }}/known_hosts &&
+      git fetch origin &&
+      git reset --hard origin/master"
+  when: git.remote_repo_url is defined
+
+- name: Ensure the recovery of the configuration worked
+  stat:
+    path: "{{ install_dir }}/local/_system/instance.yml"
+  register: file_stat
+  failed_when: not file_stat.stat.exists
+  changed_when: false
+  tags:
+    - always
+  when: git.remote_repo_url is defined

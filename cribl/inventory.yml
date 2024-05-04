@@ -1,0 +1,8 @@
+myhosts:
+  hosts:
+    test:
+      ansible_host: nas1.local
+      ansible_port: 2222
+      ansible_connection: ssh
+      ansible_user: root
+      ansible_ssh_private_key_file: ~/.ssh/id_rsa

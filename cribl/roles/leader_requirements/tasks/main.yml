@@ -1,0 +1,11 @@
+- name: Ensure Linux OS and x64 or ARM64 Architecture
+  assert:
+    that:
+      - ansible_system == 'Linux'
+      - ansible_architecture == 'x86_64' or ansible_architecture == 'aarch64'
+    fail_msg: "This playbook only supports Linux systems with x64 or ARM64 architectures."
+
+- name: Ensure Versioning prerequisite is installed
+  package:
+    name: git
+    state: present

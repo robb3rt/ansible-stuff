@@ -1,0 +1,15 @@
+- name: Get facts for current container
+  community.docker.current_container_facts:
+
+- name: Enable systemd service and start Cribl Stream Leader
+  shell: "{{ item }}"
+  loop:
+    - "{{ install_dir }}/bin/cribl boot-start enable -u cribl"
+    - "systemctl start cribl"
+  when: not ansible_module_running_in_container
+
+- name: Start Cribl Stream Leader on container
+  shell: "su - cribl -c '( ( nohup /opt/cribl/bin/cribl start 1>/dev/null 2>&1 ) & )'"
+  async: 5
+  poll: 0
+  when: ansible_module_running_in_container

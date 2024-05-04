@@ -1,0 +1,37 @@
+#Todo: be able to select a version, but only one version can be selected from versions.json: CRIBL-9568
+- name: Download and decompress Cribl latest version
+  unarchive:
+    src: "{{ lookup('ansible.builtin.url', 'https://cdn.cribl.io/dl/latest-arm64' if ansible_architecture == 'aarch64' else 'https://cdn.cribl.io/dl/latest') }}"
+    dest: "{{ install_dir }}"
+    extra_opts: [--strip-components=1]
+    mode: 0755
+    remote_src: yes
+    owner: "{{ owner }}"
+    group: "{{ group }}"
+    creates: "{{ install_dir }}/bin"
+
+- name: Ensure creation of $CRIBL_HOME/local/_system directory
+  file:
+    path: "{{ install_dir }}/local/_system"
+    state: directory
+    owner: "{{ owner }}"
+    group: "{{ group }}"
+    mode: 0700
+  when: git.remote_repo_url is not defined
+
+- name: Bootstrap configuration
+  copy: 
+    dest: "{{ install_dir }}/local/_system/instance.yml"
+    owner: "{{ owner }}"
+    group: "{{ group }}"
+    content: |
+      distributed:
+        mode: master
+        master:
+          host: {{ leader.host }}
+          port: {{ leader.port }}
+          authToken: {{ leader.authToken }}
+          tls:
+            disabled: {{ leader.tls.disabled | bool }}
+      tags: []
+  when: git.remote_repo_url is not defined

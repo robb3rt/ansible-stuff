@@ -1,0 +1,17 @@
+- name: Create .ssh folder
+  file:
+    path: "{{ ssh_key.dest_path | dirname }}"
+    state: directory
+    owner: "{{ owner }}"
+    group: "{{ group }}"
+    mode: 0700
+  when: git.remote_repo_url is defined
+
+- name: Copy private key to target host
+  copy:
+    src: "{{ ssh_key.src_path }}"
+    dest: "{{ ssh_key.dest_path }}"
+    mode: 0600
+    owner: "{{ owner }}"
+    group: "{{ group }}"
+  when: git.remote_repo_url is defined
